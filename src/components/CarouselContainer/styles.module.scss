@@ -1,0 +1,13 @@
+.blocksContainer {
+  display: flex;
+  overflow: scroll;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.dotsContainer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}

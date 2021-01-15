@@ -1,13 +1,16 @@
 import React from "react";
 import "./App.scss";
 
+//Test Data
+import data from "./testData/testData.json";
+
 //Simple Carousel
-import Block from "./components/Block";
+import CarouselContainer from "./components/CarouselContainer";
 
 function App() {
   return (
     <div className="App">
-      <Block />
+      <CarouselContainer data={data} />
     </div>
   );
 }
