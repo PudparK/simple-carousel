@@ -3,6 +3,11 @@
   overflow: scroll;
   margin-left: 20px;
   margin-right: 20px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .dotsContainer {
