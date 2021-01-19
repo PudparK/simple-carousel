@@ -4,7 +4,7 @@ import styles from "./styles.module.scss";
 import Block from "../Block";
 import Dot from "../Dot";
 
-const Box = ({ data }: any) => {
+const CarouselContainer = ({ data }: any) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const getDots = (count: number) => {
@@ -34,4 +34,4 @@ const Box = ({ data }: any) => {
   );
 };
 
-export default Box;
+export default CarouselContainer;
