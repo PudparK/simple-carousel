@@ -1,10 +1,39 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import styles from "./styles.module.scss";
 
 import Block from "../Block";
 import Dot from "../Dot";
 
-const Box = ({ data }: any) => {
+const handler = (
+  entries: IntersectionObserverEntry[],
+  observer: IntersectionObserver
+) => {
+  for (const entry of entries) {
+    if (entry.intersectionRatio >= 1) {
+      console.log("i Am visible", entry.target.textContent);
+    }
+  }
+};
+
+const options = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 1.0,
+};
+
+const getObserver = (
+  ref: React.MutableRefObject<IntersectionObserver | null>
+) => {
+  let observer = ref.current;
+  if (observer !== null) {
+    return observer;
+  }
+  let newObserver = new IntersectionObserver(handler, options);
+  ref.current = newObserver;
+  return newObserver;
+};
+
+const CarouselContainer = ({ data }: any) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const getDots = (count: number) => {
@@ -34,4 +63,4 @@ const Box = ({ data }: any) => {
   );
 };
 
-export default Box;
+export default CarouselContainer;
