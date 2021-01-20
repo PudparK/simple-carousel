@@ -1,19 +1,26 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 interface Content {
+  id: string;
+  observer: IntersectionObserver | null;
   content: React.ReactNode;
   active: boolean;
 }
 
-const Block = ({ content, active }: Content) => {
+const Block = ({ id, observer, content, active }: Content) => {
   const viewBlock = useRef<HTMLDivElement>(null);
-  console.log("viewBlock:", viewBlock);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (viewBlock.current !== null && active) {
       viewBlock.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [active]);
+
+  React.useEffect(() => {
+    if (!!viewBlock.current && !!observer) {
+      observer.observe(viewBlock.current);
+    }
+  });
 
   const defaultSettings = {
     minWidth: "100%",
@@ -23,7 +30,7 @@ const Block = ({ content, active }: Content) => {
   } as React.CSSProperties;
 
   return (
-    <div ref={viewBlock} style={defaultSettings}>
+    <div id={id} ref={viewBlock} style={defaultSettings}>
       test
     </div>
   );

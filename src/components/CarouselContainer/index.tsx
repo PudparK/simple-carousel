@@ -6,35 +6,50 @@ import Dot from "../Dot";
 
 const handler = (
   entries: IntersectionObserverEntry[],
-  observer: IntersectionObserver
+  observer: IntersectionObserver,
+  setState: (nextState: number) => void
 ) => {
-  for (const entry of entries) {
-    if (entry.intersectionRatio >= 1) {
-      console.log("i Am visible", entry.target.textContent);
+  entries.forEach((entry, i) => {
+    if (entry.intersectionRatio >= 0.1) {
+      setState(Number.parseInt(entry.target.id, 10));
     }
-  }
-};
-
-const options = {
-  root: null,
-  rootMargin: "0px",
-  threshold: 1.0,
-};
-
-const getObserver = (
-  ref: React.MutableRefObject<IntersectionObserver | null>
-) => {
-  let observer = ref.current;
-  if (observer !== null) {
-    return observer;
-  }
-  let newObserver = new IntersectionObserver(handler, options);
-  ref.current = newObserver;
-  return newObserver;
+  });
 };
 
 const CarouselContainer = ({ data }: any) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(0);
+  const carouselRef = React.useRef<HTMLDivElement | null>(null);
+  const observerRef = React.useRef<IntersectionObserver | null>(null);
+
+  const setNextSlide = React.useCallback(
+    (nextSlide: number) => {
+      if (nextSlide !== isScrolling) {
+        setCurrentSlide(nextSlide);
+        setIsScrolling(nextSlide);
+      } else {
+        setCurrentSlide(nextSlide);
+      }
+    },
+    [isScrolling]
+  );
+
+  React.useEffect(() => {
+    if (!!observerRef.current) {
+      observerRef.current.disconnect();
+    }
+    if (!!carouselRef.current) {
+      let options = {
+        root: carouselRef.current,
+        rootMargin: "0px",
+        threshold: 0.1,
+      };
+
+      observerRef.current = new IntersectionObserver((entries, observer) => {
+        handler(entries, observer, setNextSlide);
+      }, options);
+    }
+  }, [setNextSlide]);
 
   const getDots = (count: number) => {
     let dotsArr = [];
@@ -43,7 +58,7 @@ const CarouselContainer = ({ data }: any) => {
         <Dot
           active={currentSlide === i}
           onClick={() => {
-            setCurrentSlide(i);
+            setNextSlide(i);
           }}
           key={i}
         />
@@ -53,9 +68,15 @@ const CarouselContainer = ({ data }: any) => {
   };
   return (
     <>
-      <div className={styles.blocksContainer}>
+      <div ref={carouselRef} className={styles.blocksContainer}>
         {data.map((item: string, key: number) => (
-          <Block active={currentSlide === key} content={item} key={key} />
+          <Block
+            id={key.toString()}
+            observer={observerRef.current}
+            active={currentSlide === key}
+            content={item}
+            key={key}
+          />
         ))}
       </div>
       <div className={styles.dotsContainer}>{getDots(data.length)}</div>
