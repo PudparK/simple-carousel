@@ -17,10 +17,9 @@ const Block = ({ id, observer, content, active }: Content) => {
   }, [active]);
 
   React.useEffect(() => {
-    if (!!viewBlock.current && !!observer) {
+    if (!!viewBlock.current && !!observer)
       observer.observe(viewBlock.current);
-    }
-  });
+  }, [observer]);
 
   const defaultSettings = {
     minWidth: "100%",
