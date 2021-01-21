@@ -19,14 +19,19 @@ const handler = (
 const CarouselContainer = ({ data }: any) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [upcomingSlide, setUpcomingSlide] = useState(0);
-  const [observerInstace, setObserverInstance] = useState<IntersectionObserver | null>(null);
+  const [
+    observerInstace,
+    setObserverInstance,
+  ] = useState<IntersectionObserver | null>(null);
   const carouselRef = React.useRef<HTMLDivElement | null>(null);
 
   const setNextSlide = (nextSlide: number) => {
-    setCurrentSlide(nextSlide)
-    setUpcomingSlide(nextSlide)
-  }
-            
+    if (upcomingSlide === nextSlide) {
+      setUpcomingSlide(nextSlide);
+    }
+    setCurrentSlide(nextSlide);
+  };
+
   React.useEffect(() => {
     if (!!observerInstace) {
       observerInstace.disconnect();
@@ -35,10 +40,10 @@ const CarouselContainer = ({ data }: any) => {
       let options = {
         root: carouselRef.current,
         rootMargin: "0px",
-        threshold: .1
+        threshold: 0.1,
       };
 
-      const obs =  new IntersectionObserver((entries, observer) => {
+      const obs = new IntersectionObserver((entries, observer) => {
         handler(entries, observer, setUpcomingSlide);
       }, options);
       setObserverInstance(obs);
