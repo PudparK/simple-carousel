@@ -11,6 +11,8 @@ const handler = (
 ) => {
   entries.forEach((entry, i) => {
     if (entry.intersectionRatio >= 0.1) {
+      // setCanScroll(false);
+      console.log("currentslide", entry.target.id);
       setState(Number.parseInt(entry.target.id, 10));
     }
   });
@@ -18,24 +20,19 @@ const handler = (
 
 const CarouselContainer = ({ data }: any) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [upcomingSlide, setUpcomingSlide] = useState(0);
+  const [canScroll, setCanScroll] = useState(false);
   const [
     observerInstace,
     setObserverInstance,
   ] = useState<IntersectionObserver | null>(null);
   const carouselRef = React.useRef<HTMLDivElement | null>(null);
-
-  const setNextSlide = (nextSlide: number) => {
-    if (upcomingSlide === nextSlide) {
-      setUpcomingSlide(nextSlide);
-    }
-    setCurrentSlide(nextSlide);
-  };
+  const slidesRef = React.useRef<HTMLDivElement[]>([]);
 
   React.useEffect(() => {
     if (!!observerInstace) {
       observerInstace.disconnect();
     }
+
     if (!!carouselRef.current) {
       let options = {
         root: carouselRef.current,
@@ -44,7 +41,7 @@ const CarouselContainer = ({ data }: any) => {
       };
 
       const obs = new IntersectionObserver((entries, observer) => {
-        handler(entries, observer, setUpcomingSlide);
+        handler(entries, observer, setCurrentSlide);
       }, options);
       setObserverInstance(obs);
     }
@@ -55,9 +52,11 @@ const CarouselContainer = ({ data }: any) => {
     for (let i = 0; i < count; ++i) {
       dotsArr.push(
         <Dot
-          active={upcomingSlide === i}
+          active={currentSlide === i}
           onClick={() => {
-            setNextSlide(i);
+            if (slidesRef.current) {
+              slidesRef.current[i]?.scrollIntoView({ behavior: "smooth" });
+            }
           }}
           key={i}
         />
@@ -66,9 +65,20 @@ const CarouselContainer = ({ data }: any) => {
     return dotsArr;
   };
 
+  const addToRef = (ref: HTMLDivElement) => {
+    if (ref) {
+      slidesRef.current.push(ref);
+      if (observerInstace) observerInstace.observe(ref);
+    }
+  };
+
   return (
     <>
-      <div ref={carouselRef} className={styles.blocksContainer}>
+      <div
+        ref={carouselRef}
+        className={styles.blocksContainer}
+        onScroll={() => console.log("onscroll")}
+      >
         {data.map((item: string, key: number) => (
           <Block
             id={key.toString()}
@@ -76,6 +86,9 @@ const CarouselContainer = ({ data }: any) => {
             active={currentSlide === key}
             content={item}
             key={key}
+            canScroll={canScroll}
+            setCanScroll={setCanScroll}
+            ref={addToRef}
           />
         ))}
       </div>
