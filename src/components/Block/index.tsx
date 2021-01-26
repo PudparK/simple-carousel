@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 
 type Content = {
   id: string;
@@ -7,21 +7,23 @@ type Content = {
   active: boolean;
   canScroll: boolean;
   setCanScroll: (n: boolean) => void;
-}
+};
 
-const Block = React.forwardRef<HTMLDivElement, Content>(({ id }: Content, ref) => {
-  const defaultSettings = {
-    minWidth: "100%",
-    minHeight: "100px",
-    backgroundColor: "coral",
-    margin: "0 10px",
-  } as React.CSSProperties;
+const Block = React.forwardRef<HTMLDivElement, Content>(
+  ({ id }: Content, ref) => {
+    const defaultSettings = {
+      minWidth: "100%",
+      minHeight: "100px",
+      backgroundColor: "coral",
+      margin: "0 10px",
+    } as React.CSSProperties;
 
-  return (
-    <div id={id} ref={ref} style={defaultSettings}>
-      test {id}
-    </div>
-  )
-});
+    return (
+      <div id={id} ref={ref} style={defaultSettings}>
+        test {id}
+      </div>
+    );
+  }
+);
 
 export default Block;
